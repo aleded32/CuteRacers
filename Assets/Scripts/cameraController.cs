@@ -4,26 +4,27 @@ using UnityEngine;
 
 public class cameraController : MonoBehaviour
 {
-    public GameObject cam;
+    public GameObject player;
+    public GameObject camLook;
 
-    float dist = 3.0f;
-    public Rigidbody rb;
+    float dist = 9.0f;
+    
 
 
     void Start()
     {
-        cam.transform.Rotate(25, 0, 0);
+        
     }
 
-    void Update()
+    void FixedUpdate()
     {
         playerCam();   
     }
 
     void playerCam() 
     {
-        cam.transform.position = new Vector3(this.transform.position.x, 3, this.transform.position.z - dist);
-        
-        
+       transform.position = Vector3.Lerp(camLook.transform.position, player.transform.position, 1 * Time.deltaTime);
+        transform.LookAt(player.transform.position);
+               
     }
 }

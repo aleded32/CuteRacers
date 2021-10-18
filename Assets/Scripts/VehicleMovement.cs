@@ -5,78 +5,152 @@ using UnityEngine.InputSystem;
 
 public class VehicleMovement : MonoBehaviour
 {
-    float accel = 9f;
-    float decel = 3f;
-    float maxSpeed = 12f;
-    float maxReverseSpeed = -4f;
+    float accel = 20f;
+    float decel = 20f;
+    public float maxSpeed = 20f;
+    float maxReverseSpeed = -15f;
     float steerAngle;
-    float grip = 1.2f;
+    float grip = 2f;
+    bool isForward = false;
+    bool isReverse = false;
 
-   
-    
-    public Rigidbody rb;
+    public int nextCheckpoint;
+    public int currentLap;
+
+    public float lapTime, bestLapTime;
+
+    public float throttleInput, brakeInput;
+    Vector2 moveInput;
+    public Rigidbody theRB;
+
+
+
+
+    void Awake()
+    {
+
+        theRB = GetComponent<Rigidbody>();
+
+
+
+    }
 
     void Start()
     {
-        
+     
     }
-    
-    void Update()
+
+
+    void FixedUpdate()
     {
+
         drive();
         steer();
+        
+
+       
+
+
+    }
+
+    void OnThrottle(InputValue value)
+    {
+        throttleInput = value.Get<float>();
+
+
+    }
+
+    void OnBrake(InputValue value)
+    {
+        brakeInput = value.Get<float>();
+
+    }
+
+    void OnTurn(InputValue value)
+    {
+        moveInput = value.Get<Vector2>();
         
     }
 
 
     void drive()
     {
-        if (Gamepad.current.rightTrigger.ReadValue() > 0)
+        if (throttleInput > 0)
         {
-            if (rb.velocity.z >= maxSpeed)
+
+            isForward = true;
+            if (theRB.velocity.z >= maxSpeed)
             {
-                rb.velocity = new Vector3(0,0,maxSpeed);
+                theRB.velocity = new Vector3(0, 0, maxSpeed);
             }
             else
             {
-                rb.velocity += transform.forward * accel * Gamepad.current.rightTrigger.ReadValue() * Time.deltaTime;
+                theRB.velocity += transform.forward * accel * throttleInput * Time.deltaTime;
             }
 
-            //rb.AddForceAtPosition(rb.velocity * rb.mass * grip, transform.position);
-           
+            //theRB.AddForceAtPosition(theRB.velocity * theRB.mass * grip, transform.position);
+
         }
-        
-        if (Gamepad.current.leftTrigger.ReadValue() > 0) 
+        else
         {
-            if (rb.velocity.z <= maxReverseSpeed)
+            isForward = false;
+        }
+
+        if (brakeInput > 0)
+        {
+            isReverse = true;
+
+            if (theRB.velocity.z <= maxReverseSpeed)
             {
-                rb.velocity = new Vector3(0, 0, maxReverseSpeed);
-                
+                theRB.velocity = new Vector3(0, 0, maxReverseSpeed);
+
             }
             else
             {
-                rb.velocity += transform.forward * -decel * Gamepad.current.leftTrigger.ReadValue() * Time.deltaTime;
+                theRB.velocity += transform.forward * -decel * brakeInput * Time.deltaTime;
             }
 
-            
+
 
         }
-        
+        else
+        {
+            isReverse = false;
+        }
+
     }
 
-    void steer() 
+    void steer()
     {
 
-        if (Gamepad.current.leftStick.ReadValue().x < 0)
+        if (moveInput.x < 0)
         {
-            steerAngle += Gamepad.current.leftStick.ReadValue().x * 75 * Time.deltaTime;
-            rb.rotation = Quaternion.Euler(0, steerAngle, 0);
+            if (isForward)
+            {
+                steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
+            }
+            else if (isReverse)
+            {
+                steerAngle -= moveInput.x * 60 * brakeInput * Time.deltaTime;
+            }
+
+            theRB.rotation = Quaternion.Euler(0, steerAngle, 0);
         }
 
-        else if (Gamepad.current.leftStick.ReadValue().x > 0)
+        else if (moveInput.x > 0)
         {
-            steerAngle += Gamepad.current.leftStick.ReadValue().x * 75 * Time.deltaTime;
-            rb.rotation = Quaternion.Euler(0, steerAngle, 0);
+
+            if (isForward)
+            {
+                steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
+            }
+            else if (isReverse)
+            {
+                steerAngle -= moveInput.x * 60 * brakeInput * Time.deltaTime;
+            }
+            theRB.rotation = Quaternion.Euler(0, steerAngle, 0);
         }
     }
+
+    
 }
