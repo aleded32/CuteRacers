@@ -5,9 +5,9 @@ using UnityEngine.InputSystem;
 
 public class VehicleMovement : MonoBehaviour
 {
-    float accel = 20f;
+    float accel = 25f;
     float decel = 20f;
-    public float maxSpeed = 20f;
+    public float maxSpeed = 50f;
     float maxReverseSpeed = -15f;
     float steerAngle;
     float grip = 2f;
@@ -122,35 +122,53 @@ public class VehicleMovement : MonoBehaviour
 
     void steer()
     {
-
-        if (moveInput.x < 0)
-        {
-            if (isForward)
-            {
-                steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
-            }
-            else if (isReverse)
-            {
-                steerAngle -= moveInput.x * 60 * brakeInput * Time.deltaTime;
-            }
-
-            theRB.rotation = Quaternion.Euler(0, steerAngle, 0);
-        }
-
-        else if (moveInput.x > 0)
+        if (throttleInput < 1 || brakeInput < 1)
         {
 
-            if (isForward)
+            if (moveInput.x < 0)
             {
-                steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
+                if (isForward)
+                {
+                    steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
+                }
+                else if (isReverse)
+                {
+                    steerAngle -= moveInput.x * 60 * brakeInput * Time.deltaTime;
+                }
+
+                theRB.rotation = Quaternion.Euler(0, steerAngle, 0);
             }
-            else if (isReverse)
+
+            else if (moveInput.x > 0)
             {
-                steerAngle -= moveInput.x * 60 * brakeInput * Time.deltaTime;
+
+                if (isForward)
+                {
+                    steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
+                }
+                else if (isReverse)
+                {
+                    steerAngle -= moveInput.x * 60 * brakeInput * Time.deltaTime;
+                }
+                theRB.rotation = Quaternion.Euler(0, steerAngle, 0);
             }
-            theRB.rotation = Quaternion.Euler(0, steerAngle, 0);
+            else if (throttleInput > 0 && throttleInput < 1 && brakeInput > 0 && brakeInput < 1)
+            {
+
+                if (isForward)
+                {
+                    steerAngle += moveInput.x * 60 * throttleInput * Time.deltaTime;
+                }
+                else if (isReverse)
+                {
+                    steerAngle += moveInput.x * 60 * brakeInput * Time.deltaTime;
+                }
+            }
         }
+
+        
     }
+    
 
     
 }

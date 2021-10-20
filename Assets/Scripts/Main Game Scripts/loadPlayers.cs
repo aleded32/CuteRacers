@@ -10,12 +10,12 @@ public class loadPlayers : MonoBehaviour
 
     public List<GameObject> playerVehicles;
 
-    List<PlayerInput> players = new List<PlayerInput>();
+    public List<PlayerInput> players = new List<PlayerInput>();
 
     void Awake()
     {
 
-        Debug.Log(Gamepad.all.Count);
+        
         for (int i = 0; i < Gamepad.all.Count; i++)
         {
             if (i == 0)
@@ -27,9 +27,9 @@ public class loadPlayers : MonoBehaviour
                 players.Add(PlayerInput.Instantiate(playerVehicles[1], pairWithDevice: Gamepad.all[i]));
             }
 
-            players[i].transform.position = new Vector3((i+1) * 1.5f, 3, 0);
-           
+            players[i].transform.position = new Vector3((i+1) * -4.2f, 2, Gamepad.all.Count/(i+1));
 
+            
         }
        
 
@@ -40,6 +40,6 @@ public class loadPlayers : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //Debug.Log(Gamepad.all.Count);
     }
 }
